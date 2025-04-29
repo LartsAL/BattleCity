@@ -1,52 +1,63 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class TankController : MonoBehaviour
 {
     public float moveSpeed = 3f;       // —корость движени€
     public float rotateSpeed = 180f;   // —корость поворота (градусов в секунду)
 
-    private Vector2 currentFacingDirection = Vector2.right; // Ќаправление, в котором танк сейчас смотрит/повернут
-    private Vector2 movementDirection = Vector2.right;      // Ќаправление, в котором танк движетс€ (обновл€етс€ после завершени€ поворота)
-    private Vector2 desiredDirection = Vector2.right;       // ∆елаемое направление (из ввода)
-    private Quaternion targetRotation;                      // ÷елевой поворот
-    private bool isRotating = false;                        // ‘лаг, указывающий, идет ли сейчас поворот
+    private Rigidbody2D _rb;
+    
+    private float _horizontal;
+    private float _vertical;
+    
+    private Vector2 _currentFacingDirection = Vector2.right; // Ќаправление, в котором танк сейчас смотрит/повернут
+    private Vector2 _movementDirection = Vector2.right; // Ќаправление, в котором танк движетс€ (обновл€етс€ после завершени€ поворота)
+    private Vector2 _desiredDirection = Vector2.right; // ∆елаемое направление (из ввода)
+    private Vector2 _targetMoveDirection;
+    private Quaternion _targetRotation; // ÷елевой поворот
+    private bool _isRotating = false; // ‘лаг, указывающий, идет ли сейчас поворот
 
-    void Start()
+    // TODO: No need to assign the same values in Start() if we've done it above
+    private void Start()
     {
+        _rb = GetComponent<Rigidbody2D>();
+        
         // ”станавливаем начальный поворот и направление
-        currentFacingDirection = Vector2.right; // »ли другое начальное направление
-        movementDirection = currentFacingDirection;
-        targetRotation = CalculateRotation(currentFacingDirection);
-        transform.rotation = targetRotation; // ѕримен€ем начальный поворот мгновенно
+        _currentFacingDirection = Vector2.right; // »ли другое начальное направление
+        _movementDirection = _currentFacingDirection;
+        _targetRotation = CalculateRotation(_currentFacingDirection);
+        transform.rotation = _targetRotation; // ѕримен€ем начальный поворот мгновенно
     }
 
-    void Update()
+    private void Update()
     {
         HandleInput();
         RotateTank();
         MoveTank();
     }
 
-    void HandleInput()
+    private void HandleInput()
     {
-        // ќпредел€ем желаемое направление на основе ввода
-        // »спользуем GetKeyDown дл€ срабатывани€ только при нажатии,
-        // но можно оставить GetKey, если нужно мен€ть направление при удержании
-        if (Input.GetKeyDown(KeyCode.W)) desiredDirection = Vector2.up;
-        else if (Input.GetKeyDown(KeyCode.S)) desiredDirection = Vector2.down;
-        else if (Input.GetKeyDown(KeyCode.A)) desiredDirection = Vector2.left;
-        else if (Input.GetKeyDown(KeyCode.D)) desiredDirection = Vector2.right;
+        _horizontal = Input.GetAxis("Horizontal");
+        _vertical = Input.GetAxis("Vertical");
 
+        // ќпредел€ем желаемое направление на основе ввода
+        if (Mathf.Abs(_horizontal) > 0.0f) _desiredDirection = new Vector2(_horizontal, 0.0f).normalized;
+        if (Mathf.Abs(_vertical) > 0.0f) _desiredDirection = new Vector2(0.0f, _vertical).normalized;
+        
         // ≈сли желаемое направление отличаетс€ от текущего *направлени€ взгл€да*
         // и танк сейчас не поворачиваетс€, начинаем поворот
-        if (desiredDirection != currentFacingDirection && !isRotating)
+        if (_desiredDirection != _currentFacingDirection && !_isRotating)
         {
-            targetRotation = CalculateRotation(desiredDirection);
-            isRotating = true;
+            // _desiredDirection can be changed during rotation, so we need to remember its value
+            _targetMoveDirection = _desiredDirection;
+            _targetRotation = CalculateRotation(_desiredDirection);
+            _isRotating = true;
         }
     }
 
-    Quaternion CalculateRotation(Vector2 dir)
+    private Quaternion CalculateRotation(Vector2 dir)
     {
         // –ассчитываем целевой угол в Ёйлеровых координатах (вокруг оси Z дл€ 2D)
         float angle = 0f;
@@ -58,33 +69,33 @@ public class TankController : MonoBehaviour
         return Quaternion.Euler(0f, 0f, angle);
     }
 
-    void RotateTank()
+    private void RotateTank()
     {
-        if (!isRotating) return;
+        if (!_isRotating) return;
 
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, _targetRotation, rotateSpeed * Time.deltaTime);
 
-        if (Quaternion.Angle(transform.rotation, targetRotation) < 0.1f)
+        if (Quaternion.Angle(transform.rotation, _targetRotation) < 0.1f)
         {
-            transform.rotation = targetRotation;
-            currentFacingDirection = desiredDirection;
+            transform.rotation = _targetRotation;
+            _currentFacingDirection = _targetMoveDirection;
             // ќбновл€ем direction только после завершени€ поворота
-            movementDirection = currentFacingDirection;
-            isRotating = false;
+            _movementDirection = _currentFacingDirection;
+            _isRotating = false;
         }
     }
 
-    void MoveTank()
+    private void MoveTank()
     {
-        if (isRotating) return;
+        if (_isRotating) return;
 
         // ѕровер€ем любое нажатие клавиш направлени€
-        bool moveKeyPressed = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) ||
-                              Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D);
+        bool moveKeyPressed = Mathf.Abs(_horizontal) > 0.0f || Mathf.Abs(_vertical) > 0.0f;
 
         if (moveKeyPressed)
         {
-            transform.position += (Vector3)(movementDirection * moveSpeed * Time.deltaTime);
+            // TODO: Rewrite with Rigidbody2D (_rb.linearVelocity = ... ?)
+            transform.position += (Vector3)(_movementDirection * (moveSpeed * Time.deltaTime));
         }
     }
 }
