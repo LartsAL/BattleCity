@@ -1,4 +1,6 @@
 // Bullet.cs
+
+using Interfaces;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -22,6 +24,7 @@ public class Bullet : MonoBehaviour
     void Update()
     {
         // move bullet ahead to Ox
+        // TODO: Also replace moving via direct transform.position changing
         transform.position += transform.right * speed * Time.deltaTime;
 
         // ttl
@@ -32,11 +35,9 @@ public class Bullet : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Wall wall = other.GetComponent<Wall>();
-        if (wall != null)
+        if (other.gameObject.TryGetComponent(out IDamageable damageable))
         {
-            wall.TakeDamage(damage);
-            Destroy(gameObject);
+            damageable.TakeDamage(damage);
         }
     }
 }

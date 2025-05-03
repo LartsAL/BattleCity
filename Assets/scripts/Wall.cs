@@ -1,31 +1,27 @@
+using Interfaces;
 using UnityEngine;
 
-public class Wall : MonoBehaviour
+public class Wall : MonoBehaviour, IDamageable
 {
-    [Header("Wall HP")]
-    public int maxHP = 3;
-    private int currentHP;
+    [SerializeField] private WallConfig config;
+    private int _currentHealth;
+    public int Health => _currentHealth;
 
-    void Awake()
+    protected virtual void Start()
     {
-        currentHP = maxHP;
+        _currentHealth = config.maxHealth;
     }
-
-    /// Damage to wall
+    
     public void TakeDamage(int damage)
     {
-        currentHP -= damage;
-        if (currentHP <= 0)
-            Destroy(gameObject);
-    }
+        if (config.isIndestructible) return;
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        var bullet = other.GetComponent<Bullet>();
-        if (bullet != null)
+        _currentHealth -= damage;
+        if (_currentHealth <= 0)
         {
-            TakeDamage(bullet.damage);
-            Destroy(other.gameObject);
+            if (config.destroyEffect != null)
+                Instantiate(config.destroyEffect, transform.position, Quaternion.identity);
+            Destroy(gameObject);
         }
     }
 }
