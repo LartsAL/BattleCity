@@ -15,6 +15,7 @@ public class Bullet : MonoBehaviour
     public int damage = 1;
 
     private float timer;
+    public GameObject explosionPrefab;
 
     void OnEnable()
     {
@@ -35,10 +36,16 @@ public class Bullet : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        if (explosionPrefab != null)
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+
         if (other.gameObject.TryGetComponent(out IDamageable damageable))
         {
             damageable.TakeDamage(damage);
             Destroy(gameObject);
         }
+
+        
     }
+
 }
