@@ -689,6 +689,59 @@ Transform:
   m_Children: []
   m_Father: {fileID: 379635969}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1266524755
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1266524757}
+  - component: {fileID: 1266524756}
+  m_Layer: 0
+  m_Name: MapGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1266524756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1266524755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: badbd7e2e1d92a247872728b5a07fb50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wallPrefabs:
+  - {fileID: 7913040022297700605, guid: c961403fdb113a84f839b69ef69fa4c4, type: 3}
+  - {fileID: 3960976066622780090, guid: 7f0fd7d15becd1c4dadcec149f29526f, type: 3}
+  - {fileID: 1134875787735552035, guid: 942849f16906cab46819b21df09338f9, type: 3}
+  boundaryPrefab: {fileID: 5540055562372523927, guid: fcd82ebc41b901a4393a6435317e0088, type: 3}
+  width: 25
+  height: 25
+  cellSize: 1
+  wallTag: Wall
+--- !u!4 &1266524757
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1266524755}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1721662177194520597
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -927,3 +980,4 @@ SceneRoots:
   - {fileID: 1721662177194520597}
   - {fileID: 8056656892048699673}
   - {fileID: 9141397552049994677}
+  - {fileID: 1266524757}
