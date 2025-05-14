@@ -2,11 +2,13 @@
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class MapGenerator : MonoBehaviour
+public class MapManager : MonoBehaviour
 {
     [Header("Prefabs")]
     [Tooltip("Assign all wall prefabs for interior walls (e.g. BrickWall, SteelWall)")]
     public GameObject[] wallPrefabs;
+    [Tooltip("Prefab used for map floor")]
+    public GameObject floorPrefab;
     [Tooltip("Prefab used for map boundary")]
     public GameObject boundaryPrefab;
 
@@ -14,10 +16,16 @@ public class MapGenerator : MonoBehaviour
     public int width = 25;
     public int height = 25;
     public float cellSize = 1f;
+    
+    public bool[,] Maze { get; private set; }
+    public GameObject[,] Floor { get; private set; }
 
     [Header("Tag Settings")]
     public string wallTag = "Wall";
+    public string floorTag = "Floor";
 
+    private void Start() => GenerateMap();
+    
     [ContextMenu("Generate Map")]
     public void GenerateMap()
     {
@@ -26,36 +34,48 @@ public class MapGenerator : MonoBehaviour
 
         ClearExistingWalls();
         GenerateBoundary();
-        bool[,] maze = GenerateMaze();
-        InstantiateInteriorWalls(maze);
+        Maze = GenerateMaze();
+        InstantiateInteriorWalls(Maze);
+        Floor = new GameObject[width, height];
+        for (int i = 0; i < width; ++i)
+        {
+            for (int j = 0; j < height; ++j)
+            {
+                Floor[i, j] = PlaceAt(i, j, floorPrefab, floorTag);
+            }
+        }
 
         Debug.Log($"Maze generated: {width}×{height}, passages carved.");
     }
 
-    void GenerateBoundary()
+    public void FreeCell(int x, int y)
     {
-        // perimeter walls
-        var localScale = boundaryPrefab.transform.localScale;
-        float sizeX = localScale.x;
-        float sizeY = localScale.y;
-        for (int x = 0; x < width; x++)
-            PlaceAt(x * sizeX, 0, boundaryPrefab);
-        for (int x = 0; x < width; x++)
-            PlaceAt(x * sizeX, (height - 1) * sizeY, boundaryPrefab);
-        for (int y = 1; y < height - 1; y++)
-            PlaceAt(0, y * sizeY, boundaryPrefab);
-        for (int y = 1; y < height - 1; y++)
-            PlaceAt((width - 1) * sizeX, y * sizeY, boundaryPrefab);
+        Maze[x, y] = false;
     }
 
-    bool[,] GenerateMaze()
+    private void GenerateBoundary()
+    {
+        // perimeter walls
+        for (int x = 0; x < width; x++)
+        {
+            PlaceAt(x, 0, boundaryPrefab, wallTag);
+            PlaceAt(x, height - 1, boundaryPrefab, wallTag);
+        }
+        for (int y = 1; y < height - 1; y++)
+        {
+            PlaceAt(0, y, boundaryPrefab, wallTag);
+            PlaceAt(width - 1, y, boundaryPrefab, wallTag);
+        }
+    }
+
+    private bool[,] GenerateMaze()
     {
         bool[,] maze = new bool[width, height];
         // initialize all as walls
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
                 maze[x, y] = true;
-
+            
         // start DFS from (1,1)
         Stack<Vector2Int> stack = new Stack<Vector2Int>();
         Vector2Int start = new Vector2Int(1, 1);
@@ -73,7 +93,6 @@ public class MapGenerator : MonoBehaviour
             {
                 int r = rnd.Next(i, dirs.Length);
                 (dirs[i], dirs[r]) = (dirs[r], dirs[i]);
-                //var tmp = dirs[i]; dirs[i] = dirs[r]; dirs[r] = tmp;
             }
             foreach (var dir in dirs)
             {
@@ -90,7 +109,7 @@ public class MapGenerator : MonoBehaviour
         return maze;
     }
 
-    void InstantiateInteriorWalls(bool[,] maze)
+    private void InstantiateInteriorWalls(bool[,] maze)
     {
         for (int x = 1; x < width - 1; x++)
         {
@@ -100,28 +119,30 @@ public class MapGenerator : MonoBehaviour
                 {
                     // choose random prefab
                     int idx = Random.Range(0, wallPrefabs.Length);
-                    float sizeX = wallPrefabs[idx].transform.localScale.x;
-                    float sizeY = wallPrefabs[idx].transform.localScale.y;
-                    PlaceAt(x * sizeX, y * sizeY, wallPrefabs[idx]);
+                    PlaceAt(x, y, wallPrefabs[idx], wallTag);
                 }
             }
         }
     }
 
-    void PlaceAt(float x, float y, GameObject prefab)
+    private GameObject PlaceAt(int x, int y, GameObject prefab, string tag)
     {
-        if (prefab == null) return;
-        Vector3 pos = new Vector3(x * cellSize, y * cellSize, 0f);
-        GameObject w = Instantiate(prefab, pos, Quaternion.identity, transform);
-        w.tag = wallTag;
-        w.name = prefab.name + "_(" + x + "," + y + ")";
+        if (prefab == null) return null;
+
+        Vector3 localScale = prefab.transform.localScale;
+        Vector3 pos = new Vector3(x * localScale.x * cellSize, y * localScale.y * cellSize, 0f);
+        GameObject obj = Instantiate(prefab, pos, Quaternion.identity, transform);
+        
+        obj.tag = tag;
+        obj.name = prefab.name + "_(" + x + "," + y + ")";
+        obj.AddComponent<TileInfo>().Initialize(new Vector2Int(x, y));
+
+        return obj;
     }
 
-    void ClearExistingWalls()
+    private void ClearExistingWalls()
     {
         for (int i = transform.childCount - 1; i >= 0; i--)
             DestroyImmediate(transform.GetChild(i).gameObject);
     }
-
-    private void Start() => GenerateMap();
 }

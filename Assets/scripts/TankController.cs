@@ -44,7 +44,7 @@ public class TankController : MonoBehaviour
         if (Mathf.Abs(_horizontal) > 0.0f) _desiredDirection = new Vector2(_horizontal, 0.0f).normalized;
         if (Mathf.Abs(_vertical) > 0.0f) _desiredDirection = new Vector2(0.0f, _vertical).normalized;
         
-        if (_desiredDirection != _currentFacingDirection && !_isRotating)
+        if (_currentFacingDirection != _desiredDirection && !_isRotating)
         {
             // _desiredDirection can be changed during rotation, so we need to remember its value
             _targetMoveDirection = _desiredDirection;
@@ -81,14 +81,23 @@ public class TankController : MonoBehaviour
 
     private void MoveTank()
     {
-        if (_isRotating) return;
+        if (_isRotating)
+        {
+            _rb.linearVelocity = Vector2.zero;
+            return;
+        }
 
         bool moveKeyPressed = Mathf.Abs(_horizontal) > 0.0f || Mathf.Abs(_vertical) > 0.0f;
 
         if (moveKeyPressed)
         {
             // TODO: Rewrite with Rigidbody2D (_rb.linearVelocity = ... ?)
-            transform.position += (Vector3)(_movementDirection * (moveSpeed * Time.deltaTime));
+            _rb.linearVelocity = _movementDirection * moveSpeed;
+            // transform.position += (Vector3)(_movementDirection * (moveSpeed * Time.deltaTime));
+        }
+        else
+        {
+            _rb.linearVelocity = Vector2.zero;
         }
     }
 }

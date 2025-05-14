@@ -36,16 +36,13 @@ public class Bullet : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (explosionPrefab != null)
-            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-
-        if (other.gameObject.TryGetComponent(out IDamageable damageable))
-        {
-            damageable.TakeDamage(damage);
-            Destroy(gameObject);
-        }
-
+        if (!other.gameObject.TryGetComponent(out IDamageable damageable)) return;
         
+        if (explosionPrefab != null)
+        {
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        }
+        damageable.TakeDamage(damage);
+        Destroy(gameObject);
     }
-
 }
