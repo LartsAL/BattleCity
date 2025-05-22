@@ -22,6 +22,7 @@ namespace MapGenerators
             FillAllWalls(ref map, width, height);
             FillMapBorder(ref map, width, height);
             DigMaze(ref map, width, height);
+            CarveAdditionalPassages(ref map, width, height);
             
             return map;
         }
@@ -84,6 +85,45 @@ namespace MapGenerators
             {
                 int r = _random.Next(i, directions.Length);
                 (directions[i], directions[r]) = (directions[r], directions[i]);
+            }
+        }
+        
+        private void CarveAdditionalPassages(ref TileType[,] map, int width, int height)
+        {
+            const float koef = 0.05f; // 5%
+            const int maxAttempts = 1000;
+            
+            int additionalPassagesCount = (int)(koef * width * height);
+            for (int i = 0; i < maxAttempts; i++)
+            {
+                if (additionalPassagesCount == 0)
+                {
+                    break;
+                }
+                
+                int x = _random.Next(1, width-1);
+                int y = _random.Next(1, height-1);
+
+                if (map[x, y] == TileType.Wall)
+                {
+                    if (map[x - 1, y] == TileType.Floor && map[x + 1, y] == TileType.Floor ||
+                        map[x, y - 1] == TileType.Floor && map[x, y + 1] == TileType.Floor)
+                    {
+                        map[x, y] = TileType.Placeholder;
+                        additionalPassagesCount--;
+                    }
+                }
+            }
+
+            for (int i = 1; i < width-1; i++)
+            {
+                for (int j = 1; j < height - 1; j++)
+                {
+                    if (map[i, j] == TileType.Placeholder)
+                    {
+                        map[i, j] = TileType.Floor;
+                    }
+                }
             }
         }
     }
