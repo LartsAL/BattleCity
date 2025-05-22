@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Utils
@@ -32,7 +33,7 @@ namespace Utils
                 .FirstOrDefault();
         }
 
-        /*public static List<T> GetAllNearestOfType<T>(Vector2 center, float radius)
+        public static List<T> GetAllNearestOfType<T>(Vector2 center, float radius)
         {
             return Physics2D.OverlapCircleAll(center, radius)
                 .Select(collider => 
@@ -42,6 +43,6 @@ namespace Utils
                 })
                 .Where(component => component != null)
                 .ToList();
-        }*/
+        }
     }
 }

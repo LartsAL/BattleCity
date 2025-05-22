@@ -36,7 +36,8 @@ public class MapManager : MonoBehaviour
 
     private readonly IMapGenerator _mapGenerator = new MapGeneratorDFSMaze();
     private bool _generatingMap = false;
-    
+
+    public event Action OnMapChanged;
     public TileType[,] Map { get; private set; }
     public GameObject[,] TilesToObjectsMap { get; private set; }
 
@@ -72,6 +73,8 @@ public class MapManager : MonoBehaviour
         
         GameObject prefab = GetPrefab(type);
         TilesToObjectsMap[x, y] = PlaceAt(x, y, prefab);
+        
+        OnMapChanged?.Invoke();
     }
 
     private void InstantiateMap()
@@ -95,7 +98,7 @@ public class MapManager : MonoBehaviour
             TileType.Water => waterPrefab,
             TileType.Wall => wallPrefabs[_random.Next(0, wallPrefabs.Length)],
             TileType.MapBorder => borderPrefab,
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentException($"Prefab cannot be requested for this type of tile: {type}")
         };
     }
 

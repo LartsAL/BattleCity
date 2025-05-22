@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Interfaces;
+﻿using Interfaces;
 using UnityEngine;
 using Utils;
 
@@ -7,6 +6,9 @@ namespace Goals
 {
     public class AttackPlayerGoal : IGoal
     {
+        private static readonly LayerMask WallsLayer = LayerMask.GetMask("Walls");
+        private static readonly LayerMask TanksLayer = LayerMask.GetMask("Tanks");
+        
         private readonly GameObject _relatedObject;
         private readonly IShooter _shooter;
         private readonly IRotatable _rotatable;
@@ -46,9 +48,13 @@ namespace Goals
             direction = _directionToPlayer * distance;
             Debug.DrawLine(currentPosition, currentPosition + (Vector3) direction, Color.yellow);
 
-            RaycastHit2D[] hits = Physics2D.RaycastAll(currentPosition, direction, distance);
-            return !hits.Any(hit => hit.collider.CompareTag("Wall")) &&
-                    hits.Any(hit => hit.collider.CompareTag("Player"));
+            RaycastHit2D wallHit = Physics2D.Raycast(currentPosition, _directionToPlayer, distance, WallsLayer);
+            if (wallHit.collider != null)
+            {
+                return false;
+            }
+            RaycastHit2D playerHit = Physics2D.Raycast(currentPosition, _directionToPlayer, distance, TanksLayer);
+            return playerHit.collider != null && playerHit.collider.CompareTag("Player");
         }
 
         public void Execute()
@@ -56,7 +62,7 @@ namespace Goals
             Vector2 facingDirection = _relatedObject.transform.right;
             if (facingDirection != _directionToPlayer)
             {
-                _rotatable.RotateTowards(_directionToPlayer, 360.0f);
+                _rotatable.RotateTowards(_directionToPlayer, 270.0f);
             }
             else
             {

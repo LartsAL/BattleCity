@@ -16,10 +16,14 @@ namespace Goals
         private readonly GameObject _relatedObject;
         private readonly IMovable _movable;
         
-        private Vector2Int _destinationCell;
+        private Vector2Int _destinationTile;
         private Vector2[] _path;
-        private Vector2Int _currentCell;
+        private Vector2Int _currentTile;
         private int _nextPointIdx;
+        
+        private Vector2Int _currentTileOld; // For stuck checking
+        private float _stuckTimer = 0.0f;
+        private const float MaxStuckTime = 2.0f;
 
         public RandomMoveGoal(GameObject relatedObject)
         {
@@ -31,7 +35,9 @@ namespace Goals
             _relatedObject = relatedObject;
             _random = new System.Random();
             _movable = movable;
-            _mapManager = GameObject.FindWithTag("MapManager")?.GetComponent<MapManager>();
+            _mapManager = GameObject.FindWithTag("MapManager").GetComponent<MapManager>();
+
+            _mapManager.OnMapChanged += UpdatePath;
         }
         
         public bool IsAvailable()
@@ -42,14 +48,30 @@ namespace Goals
 
         public void Execute()
         {
-            _currentCell = ObjectsFinder.GetNearestOfType<TileInfo>(_relatedObject.transform.position, 1).GridPosition;
+            _currentTile = ObjectsFinder.GetNearestOfType<TileInfo>(_relatedObject.transform.position, 1).GridPosition;
+
+            if (_currentTile == _currentTileOld)
+            {
+                Debug.Log($"Stuck for {_stuckTimer}");
+                _stuckTimer += Time.deltaTime;
+                if (_stuckTimer > MaxStuckTime)
+                {
+                    Debug.LogWarning("Stuck for too long. Choosing new point");
+                    _destinationTile = GetRandomFloorCell();
+                    UpdatePath();
+                    _stuckTimer = 0.0f;
+                }
+            }
+            else
+            {
+                _currentTileOld = _currentTile;
+                _stuckTimer = 0.0f;
+            }
+            
             if (_path == null)
             {
-                _destinationCell = GetRandomFloorCell();
-                Vector2Int[] cellsPath = Pathfinder.AStar(_mapManager.Map, _currentCell, _destinationCell);
-                cellsPath = Pathfinder.SimplifyPath(cellsPath);
-                _path = ToGlobalCoordinatesPath(cellsPath);
-                _nextPointIdx = 0;
+                _destinationTile = GetRandomFloorCell();
+                UpdatePath();
             }
             else
             {
@@ -67,6 +89,22 @@ namespace Goals
                     _movable.MoveTowards(_path[_nextPointIdx]);
                 }
             }
+            
+            Debug.DrawLine(_destinationTile + new Vector2(-0.5f, -0.5f), _destinationTile + new Vector2(0.5f, 0.5f), Color.red, 0.05f);
+            Debug.DrawLine(_destinationTile + new Vector2(-0.5f, 0.5f), _destinationTile + new Vector2(0.5f, -0.5f), Color.red, 0.05f);
+        }
+
+        private void UpdatePath()
+        {
+            Vector2Int[] cellsPath = Pathfinder.AStar(_mapManager.Map, _currentTile, _destinationTile);
+            if (cellsPath.Length == 0)
+            {
+                _path = null;
+                return;
+            }
+            cellsPath = Pathfinder.SimplifyPath(cellsPath);
+            _path = ToGlobalCoordinatesPath(cellsPath);
+            _nextPointIdx = 0;
         }
 
         private Vector2Int GetRandomFloorCell()
@@ -84,7 +122,7 @@ namespace Goals
                 return new Vector2Int(cell.Item1, cell.Item2);
             }
 
-            return _currentCell;
+            return _currentTile;
         }
 
         private Vector2[] ToGlobalCoordinatesPath(Vector2Int[] path)

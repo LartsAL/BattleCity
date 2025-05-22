@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8244398838646273109}
   - component: {fileID: 7805170617707755492}
   - component: {fileID: 177219767851013559}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MapWall
   m_TagString: MapBorder
   m_Icon: {fileID: 0}
@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 5540055562372523927}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []

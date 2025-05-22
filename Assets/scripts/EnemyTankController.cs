@@ -6,6 +6,8 @@ using Utils;
 [RequireComponent(typeof(Rigidbody2D))]
 public class EnemyTankController : MonoBehaviour, IMovable, IRotatable, IShooter
 {
+    private static LayerMask TanksLayer;
+    
     private IBrain _brain;
     
     [SerializeField] private Rigidbody2D _rb;
@@ -21,8 +23,11 @@ public class EnemyTankController : MonoBehaviour, IMovable, IRotatable, IShooter
     private Vector2 _targetPosition;
     private Vector2 _facingDirection;
 
-    private void Awake()
+    public float minGap = 1.5f;
+    
+    private void Start()
     {
+        TanksLayer = LayerMask.GetMask("Tanks");
         _brain = new SimplePatrolBrain(gameObject);
         _currentAttackCooldown = attackCooldown;
     }
@@ -30,7 +35,6 @@ public class EnemyTankController : MonoBehaviour, IMovable, IRotatable, IShooter
     private void Update()
     {
         AlignToGrid();
-        
         _brain.Think();
     }
 
@@ -47,6 +51,12 @@ public class EnemyTankController : MonoBehaviour, IMovable, IRotatable, IShooter
         {
             //_rb.linearVelocity = Vector2.zero;
             RotateTowards(direction, rotateSpeed);
+            return;
+        }
+        
+        if (Physics2D.Raycast(transform.position, _facingDirection, minGap, TanksLayer))
+        {
+            Debug.Log("Way blocked");
             return;
         }
         
