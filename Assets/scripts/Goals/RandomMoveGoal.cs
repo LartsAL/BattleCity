@@ -23,7 +23,7 @@ namespace Goals
         
         private Vector2Int _currentTileOld; // For stuck checking
         private float _stuckTimer = 0.0f;
-        private const float MaxStuckTime = 2.0f;
+        private const float MaxStuckTime = 3.0f;
 
         public RandomMoveGoal(GameObject relatedObject)
         {
@@ -50,23 +50,7 @@ namespace Goals
         {
             _currentTile = ObjectsFinder.GetNearestOfType<TileInfo>(_relatedObject.transform.position, 1).GridPosition;
 
-            if (_currentTile == _currentTileOld)
-            {
-                Debug.Log($"Stuck for {_stuckTimer}");
-                _stuckTimer += Time.deltaTime;
-                if (_stuckTimer > MaxStuckTime)
-                {
-                    Debug.LogWarning("Stuck for too long. Choosing new point");
-                    _destinationTile = GetRandomFloorCell();
-                    UpdatePath();
-                    _stuckTimer = 0.0f;
-                }
-            }
-            else
-            {
-                _currentTileOld = _currentTile;
-                _stuckTimer = 0.0f;
-            }
+            CheckStuck();
             
             if (_path == null)
             {
@@ -92,6 +76,25 @@ namespace Goals
             
             Debug.DrawLine(_destinationTile + new Vector2(-0.5f, -0.5f), _destinationTile + new Vector2(0.5f, 0.5f), Color.red, 0.05f);
             Debug.DrawLine(_destinationTile + new Vector2(-0.5f, 0.5f), _destinationTile + new Vector2(0.5f, -0.5f), Color.red, 0.05f);
+        }
+
+        private void CheckStuck()
+        {
+            if (_currentTile == _currentTileOld)
+            {
+                _stuckTimer += Time.deltaTime;
+                if (_stuckTimer > MaxStuckTime)
+                {
+                    _destinationTile = GetRandomFloorCell();
+                    UpdatePath();
+                    _stuckTimer = 0.0f;
+                }
+            }
+            else
+            {
+                _currentTileOld = _currentTile;
+                _stuckTimer = 0.0f;
+            }
         }
 
         private void UpdatePath()

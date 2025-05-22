@@ -23,7 +23,7 @@ public class EnemyTankController : MonoBehaviour, IMovable, IRotatable, IShooter
     private Vector2 _targetPosition;
     private Vector2 _facingDirection;
 
-    public float minGap = 1.5f;
+    public float minGap = 2.25f;
     
     private void Start()
     {
@@ -56,7 +56,6 @@ public class EnemyTankController : MonoBehaviour, IMovable, IRotatable, IShooter
         
         if (Physics2D.Raycast(transform.position, _facingDirection, minGap, TanksLayer))
         {
-            Debug.Log("Way blocked");
             return;
         }
         
