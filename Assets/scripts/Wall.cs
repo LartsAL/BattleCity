@@ -1,6 +1,6 @@
 using Interfaces;
 using UnityEngine;
-using Utils;
+using TileType = Interfaces.IMapGenerator.TileType;
 
 public class Wall : MonoBehaviour, IDamageable
 {
@@ -39,8 +39,8 @@ public class Wall : MonoBehaviour, IDamageable
         }
 
         MapManager mapManager = GameObject.FindWithTag("MapManager").GetComponent<MapManager>();
-        Vector2Int wallCell = ObjectsFinder.GetNearestOfType<TileInfo>(transform.position, 1).GridPosition;
-        mapManager.FreeCell(wallCell.x, wallCell.y);
+        Vector2Int wallCell = gameObject.GetComponent<TileInfo>().GridPosition;
+        mapManager.ReplaceTile(wallCell.x, wallCell.y, TileType.Floor);
     }
 }
 

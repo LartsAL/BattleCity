@@ -1,0 +1,90 @@
+﻿using System.Collections.Generic;
+using Interfaces;
+using UnityEngine;
+using TileType = Interfaces.IMapGenerator.TileType;
+using Random = System.Random;
+
+namespace MapGenerators
+{
+    public class MapGeneratorDFSMaze : IMapGenerator
+    {
+        private readonly Random _random = new Random();
+        
+        public TileType[,] GenerateMap(int width, int height)
+        {
+            if (width % 2 == 0 || height % 2 == 0)
+            {
+                Debug.LogWarning("Width and height should be odd for proper maze generation");
+            }
+            
+            TileType[,] map = new TileType[width, height];
+
+            FillAllWalls(ref map, width, height);
+            FillMapBorder(ref map, width, height);
+            DigMaze(ref map, width, height);
+            
+            return map;
+        }
+
+        private void FillAllWalls(ref TileType[,] map, int width, int height)
+        {
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    map[i, j] = TileType.Wall;
+                }
+            }
+        }
+        
+        private void FillMapBorder(ref TileType[,] map, int width, int height)
+        {
+            for (int i = 0; i < width; i++)
+            {
+                map[i, 0] = TileType.MapBorder;
+                map[i, height-1] = TileType.MapBorder;
+            }
+            for (int i = 0; i < height; i++)
+            {
+                map[0, i] = TileType.MapBorder;
+                map[width-1, i] = TileType.MapBorder;
+            }
+        }
+
+        private void DigMaze(ref TileType[,] map, int width, int height)
+        {
+            Stack<Vector2Int> stack = new Stack<Vector2Int>();
+            Vector2Int start = new Vector2Int(1, 1);
+            map[start.x, start.y] = TileType.Floor;
+            stack.Push(start);
+            
+            Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+
+            while (stack.Count > 0)
+            {
+                Vector2Int currentTile = stack.Pop();
+                ShuffleDirections(ref directions);
+                foreach (var direction in directions)
+                {
+                    Vector2Int nextTile = currentTile + direction * 2;
+                    if (nextTile.x > 0 && nextTile.x < width - 1 && nextTile.y > 0 && nextTile.y < height - 1 && map[nextTile.x, nextTile.y] == TileType.Wall)
+                    {
+                        // Carve a passage
+                        map[nextTile.x, nextTile.y] = TileType.Floor;
+                        map[currentTile.x + direction.x, currentTile.y + direction.y] = TileType.Floor;
+                        stack.Push(nextTile);
+                    }
+                }
+            }
+        }
+
+        private void ShuffleDirections(ref Vector2Int[] directions)
+        {
+            for (int i = 0; i < directions.Length; i++)
+            {
+                int r = _random.Next(i, directions.Length);
+                (directions[i], directions[r]) = (directions[r], directions[i]);
+            }
+        }
+    }
+}

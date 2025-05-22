@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using TileType = Interfaces.IMapGenerator.TileType;
 
 namespace Utils
 {
@@ -19,14 +21,14 @@ namespace Utils
             }
         }
         
-        public static Vector2Int[] AStar(bool[,] map, Vector2Int startPoint, Vector2Int endPoint)
+        public static Vector2Int[] AStar(TileType[,] map, Vector2Int startPoint, Vector2Int endPoint)
         {
             // Check if start or end is out of bounds or blocked
             if (!IsPositionValid(map, startPoint) || !IsPositionValid(map, endPoint))
-                return new Vector2Int[0];
+                return Array.Empty<Vector2Int>();
 
-            if (map[startPoint.x, startPoint.y] || map[endPoint.x, endPoint.y])
-                return new Vector2Int[0];
+            if (map[startPoint.x, startPoint.y] != TileType.Floor || map[endPoint.x, endPoint.y] != TileType.Floor)
+                return Array.Empty<Vector2Int>();
 
             // Initialize open and closed sets
             var openSet = new List<Node>();
@@ -77,7 +79,7 @@ namespace Utils
 
                     // Skip if not valid or wall or already closed
                     if (!IsPositionValid(map, neighborPos) || 
-                        map[neighborPos.x, neighborPos.y] || 
+                        map[neighborPos.x, neighborPos.y] != TileType.Floor || 
                         closedSet.Contains(neighborPos))
                     {
                         continue;
@@ -104,7 +106,7 @@ namespace Utils
             }
 
             // No path found
-            return new Vector2Int[0];
+            return Array.Empty<Vector2Int>();
         }
         
         public static Vector2Int[] SimplifyPath(Vector2Int[] path)
@@ -135,7 +137,7 @@ namespace Utils
             return simplifiedPath.ToArray();
         }
         
-        private static bool IsPositionValid(bool[,] map, Vector2Int position)
+        private static bool IsPositionValid(TileType[,] map, Vector2Int position)
         {
             return position.x >= 0 && position.x < map.GetLength(0) && 
                    position.y >= 0 && position.y < map.GetLength(1);

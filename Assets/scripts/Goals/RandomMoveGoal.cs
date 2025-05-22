@@ -3,6 +3,7 @@ using System.Linq;
 using Interfaces;
 using UnityEngine;
 using Utils;
+using TileType = Interfaces.IMapGenerator.TileType;
 
 namespace Goals
 {
@@ -41,14 +42,13 @@ namespace Goals
 
         public void Execute()
         {
-            // _currentCell = TileFinder.GetNearestTileInfo(_relatedObject.transform.position, 1).GridPosition;
             _currentCell = ObjectsFinder.GetNearestOfType<TileInfo>(_relatedObject.transform.position, 1).GridPosition;
             if (_path == null)
             {
-                _destinationCell = GetRandomFreeCell();
-                Vector2Int[] cellsPath = Pathfinder.AStar(_mapManager.Maze, _currentCell, _destinationCell);
+                _destinationCell = GetRandomFloorCell();
+                Vector2Int[] cellsPath = Pathfinder.AStar(_mapManager.Map, _currentCell, _destinationCell);
                 cellsPath = Pathfinder.SimplifyPath(cellsPath);
-                _path = ToGlobalCoordinates(cellsPath); // Make a method in MapManager? Like CoordinatesAdapter or smth..?
+                _path = ToGlobalCoordinatesPath(cellsPath);
                 _nextPointIdx = 0;
             }
             else
@@ -69,12 +69,12 @@ namespace Goals
             }
         }
 
-        private Vector2Int GetRandomFreeCell()
+        private Vector2Int GetRandomFloorCell()
         {
-            bool[,] maze = _mapManager.Maze;
-            List<(int, int)> freeCells = Enumerable.Range(0, maze.GetLength(0))
-                .SelectMany(x => Enumerable.Range(0, maze.GetLength(1))
-                .Where(y => maze[x, y] == false)
+            TileType[,] map = _mapManager.Map;
+            List<(int, int)> freeCells = Enumerable.Range(0, map.GetLength(0))
+                .SelectMany(x => Enumerable.Range(0, map.GetLength(1))
+                .Where(y => map[x, y] == TileType.Floor)
                 .Select(y => (x, y)))
                 .ToList();
 
@@ -87,12 +87,12 @@ namespace Goals
             return _currentCell;
         }
 
-        private Vector2[] ToGlobalCoordinates(Vector2Int[] path)
+        private Vector2[] ToGlobalCoordinatesPath(Vector2Int[] path)
         {
             Vector2[] globalPath = new Vector2[path.Length];
             for (int i = 0; i < path.Length; ++i)
             {
-                globalPath[i] = _mapManager.Floor[path[i].x, path[i].y].transform.position;
+                globalPath[i] = _mapManager.TilesToObjectsMap[path[i].x, path[i].y].transform.position;
             }
             return globalPath;
         }
