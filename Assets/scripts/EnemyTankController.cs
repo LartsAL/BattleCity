@@ -24,6 +24,7 @@ public class EnemyTankController : MonoBehaviour, IMovable, IRotatable, IShooter
     private Vector2 _facingDirection;
 
     public float minGap = 2.25f;
+    public Transform[] raycastPoints;
     
     private void Start()
     {
@@ -53,10 +54,13 @@ public class EnemyTankController : MonoBehaviour, IMovable, IRotatable, IShooter
             RotateTowards(direction, rotateSpeed);
             return;
         }
-        
-        if (Physics2D.Raycast(transform.position, _facingDirection, minGap, TanksLayer))
+
+        foreach (var raycastPoint in raycastPoints)
         {
-            return;
+            if (Physics2D.Raycast(raycastPoint.position, _facingDirection, minGap, TanksLayer))
+            {
+                return;
+            }
         }
         
         //_rb.linearVelocity = direction * moveSpeed;
