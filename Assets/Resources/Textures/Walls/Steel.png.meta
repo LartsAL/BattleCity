@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 51ee77906efd2404691303fc37d6b9b1
+guid: 165c768eb22cbd04baecc245b89d3121
 AssetOrigin:
   serializedVersion: 1
   productId: 111778
   packageName: FREE Stylized PBR Textures Pack
   packageVersion: 1.55
-  assetPath: Assets/Cartoon_Texture_Pack/SAND/SAND_Beach/Textures/Sand_Beach_Shell_Normal.png
+  assetPath: Assets/Cartoon_Texture_Pack/ROOF/ROOF_SquareTile_Flat/Textures/Roof_SquareTile_Flat_Basecolor_A.png
   uploadId: 585011
 TextureImporter:
   internalIDToNameTable: []
@@ -76,7 +76,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 256
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1

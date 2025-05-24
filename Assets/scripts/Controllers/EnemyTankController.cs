@@ -3,7 +3,7 @@ using Interfaces;
 using UnityEngine;
 using Utils;
 
-namespace Controllers
+namespace Managers
 {
     [RequireComponent(typeof(Rigidbody2D))]
     public class EnemyTankController : MonoBehaviour, IDamageable, IMovable, IRotatable, IShooter
@@ -39,6 +39,7 @@ namespace Controllers
             rb = GetComponent<Rigidbody2D>();
             _brain = new SimplePatrolBrain(gameObject);
             _currentAttackCooldown = attackCooldown;
+            _currentHealth = maxHealth;
         }
 
         private void Update()
@@ -58,21 +59,19 @@ namespace Controllers
 
             if (_facingDirection != direction)
             {
-                //_rb.linearVelocity = Vector2.zero;
                 RotateTowards(direction, rotateSpeed);
                 return;
             }
 
             foreach (var raycastPoint in raycastPoints)
             {
-                if (Physics2D.Raycast(raycastPoint.position, _facingDirection, minGap, _tanksLayer))
+                RaycastHit2D hit = Physics2D.Raycast(raycastPoint.position, _facingDirection, minGap, _tanksLayer);
+                if (hit && hit.collider.CompareTag("Enemy"))
                 {
                     return;
                 }
             }
-        
-            //_rb.linearVelocity = direction * moveSpeed;
-        
+            
             rb.MovePosition(Vector2.MoveTowards(rb.position, position, moveSpeed * Time.fixedDeltaTime));
         }
 

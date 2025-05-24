@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Interfaces;
+using Managers;
 using UnityEngine;
 using Utils;
 using TileType = Interfaces.IMapGenerator.TileType;
@@ -80,6 +81,7 @@ namespace Goals
 
         private void CheckStuck()
         {
+            // TODO: Maybe self destruction if stuck for TOO much time (when 2+ tanks are deadlocked)
             if (_currentTile == _currentTileOld)
             {
                 _stuckTimer += Time.deltaTime;

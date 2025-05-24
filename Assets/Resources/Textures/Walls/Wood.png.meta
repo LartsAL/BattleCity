@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 52b99d64baa59234e83d32cd8818704e
+guid: c37f4e4a8cd8afc4ca6872288d770961
 AssetOrigin:
   serializedVersion: 1
   productId: 111778
   packageName: FREE Stylized PBR Textures Pack
   packageVersion: 1.55
-  assetPath: Assets/Cartoon_Texture_Pack/WALLS/WALL_Bricks/Textures/Wall_Brick_Basecolor_C.png
+  assetPath: Assets/Cartoon_Texture_Pack/WOOD/WOOD_Plain/Textures/Wood_Plain_B_Basecolor.png
   uploadId: 585011
 TextureImporter:
   internalIDToNameTable: []
@@ -76,7 +76,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 256
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1

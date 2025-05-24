@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Controllers
+namespace Managers
 {
     public class MainMenuManager : MonoBehaviour
     {

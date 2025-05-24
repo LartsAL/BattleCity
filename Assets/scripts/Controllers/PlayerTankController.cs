@@ -1,9 +1,7 @@
 using Interfaces;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using Utils;
 
-namespace Controllers
+namespace Managers
 {
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlayerTankController : MonoBehaviour, IDamageable, IMovable, IRotatable, IShooter
@@ -141,10 +139,8 @@ namespace Controllers
                 Instantiate(destroyEffect, transform.position, Quaternion.identity);
             }
 
-            StartCoroutine(TimeUtils.WaitAndDo(delayAfterDeath, () =>
-            {
-                SceneManager.LoadScene("GameOver");
-            }));
+            var gameManager = GameObject.FindWithTag("GameManager").GetComponent<SoloGameManager>();
+            gameManager.ToGameOverScene();
         }
     }
 }

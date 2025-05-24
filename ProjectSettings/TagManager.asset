@@ -8,6 +8,8 @@ TagManager:
   - Wall
   - Floor
   - MapBorder
+  - GameManager
+  - Enemy
   layers:
   - Default
   - TransparentFX
