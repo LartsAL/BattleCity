@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Interfaces;
 using Managers;
 using UnityEngine;
 using Utils;
-using TileType = Interfaces.IMapGenerator.TileType;
+using TileType = Common.TileType;
 
 namespace Goals
 {

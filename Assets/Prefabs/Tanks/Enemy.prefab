@@ -458,7 +458,7 @@ MonoBehaviour:
   rb: {fileID: 8938440993014641651}
   bulletPrefab: {fileID: 3993873796198769334, guid: 98ba940cdfc89d44db6f6eae4e0fefa5, type: 3}
   firePoint: {fileID: 484385370546113227}
-  attackCooldown: 1.5
+  attackCooldown: 1.75
   moveSpeed: 2
   rotateSpeed: 90
   minGap: 2.25

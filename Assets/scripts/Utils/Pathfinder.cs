@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using TileType = Interfaces.IMapGenerator.TileType;
+using TileType = Common.TileType;
 
 namespace Utils
 {
@@ -9,7 +9,7 @@ namespace Utils
     {
         private class Node
         {
-            public Vector2Int Position;
+            public readonly Vector2Int Position;
             public Node Parent;
             public int GCost;
             public int HCost;

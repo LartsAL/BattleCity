@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Interfaces;
 using UnityEngine;
-using TileType = Interfaces.IMapGenerator.TileType;
+using TileType = Common.TileType;
 using Random = System.Random;
 
 namespace MapGenerators

@@ -33273,6 +33273,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &649452721
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 649452722}
+  m_Layer: 0
+  m_Name: SpawnPointsManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &649452722
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 649452721}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &654748925
 GameObject:
   m_ObjectHideFlags: 0
@@ -98795,18 +98826,19 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1266524757}
+  - {fileID: 1571129019}
+  - {fileID: 649452722}
   - {fileID: 449717290}
   - {fileID: 852761158658769637}
   - {fileID: 8967804304346528741}
   - {fileID: 1721662177194520597}
   - {fileID: 8056656892048699673}
   - {fileID: 9141397552049994677}
-  - {fileID: 1266524757}
   - {fileID: 7114637133067972032}
   - {fileID: 933661713}
   - {fileID: 1208059651}
   - {fileID: 689505139}
   - {fileID: 887438645}
   - {fileID: 1257742452}
-  - {fileID: 1571129019}
   - {fileID: 854478834}

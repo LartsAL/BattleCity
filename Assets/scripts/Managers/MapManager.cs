@@ -1,9 +1,10 @@
 ﻿using System;
+using Common;
 using Interfaces;
 using MapGenerators;
 using UnityEngine;
 using Random = System.Random;
-using TileType = Interfaces.IMapGenerator.TileType;
+using TileType = Common.TileType;
 
 namespace Managers
 {
