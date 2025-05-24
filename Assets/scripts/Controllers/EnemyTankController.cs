@@ -55,7 +55,7 @@ namespace Managers
         
             Vector2 currentPosition = transform.position;
             Vector2 direction = (position - currentPosition).normalized;
-            direction = VectorUtils.RoundToCardinal(direction);
+            direction = CommonUtils.RoundToCardinalVector(direction);
 
             if (_facingDirection != direction)
             {

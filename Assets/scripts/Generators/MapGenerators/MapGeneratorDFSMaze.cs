@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using Interfaces;
 using UnityEngine;
+using Utils;
 using TileType = Common.TileType;
 using Random = System.Random;
 
-namespace MapGenerators
+namespace Generators.MapGenerators
 {
     public class MapGeneratorDFSMaze : IMapGenerator
     {
-        private readonly Random _random = new Random();
+        private readonly Random _random = new ();
         
         public TileType[,] GenerateMap(int width, int height)
         {
@@ -64,7 +65,7 @@ namespace MapGenerators
             while (stack.Count > 0)
             {
                 Vector2Int currentTile = stack.Pop();
-                ShuffleDirections(ref directions);
+                directions.Shuffle();
                 foreach (var direction in directions)
                 {
                     Vector2Int nextTile = currentTile + direction * 2;
@@ -76,15 +77,6 @@ namespace MapGenerators
                         stack.Push(nextTile);
                     }
                 }
-            }
-        }
-
-        private void ShuffleDirections(ref Vector2Int[] directions)
-        {
-            for (int i = 0; i < directions.Length; i++)
-            {
-                int r = _random.Next(i, directions.Length);
-                (directions[i], directions[r]) = (directions[r], directions[i]);
             }
         }
         

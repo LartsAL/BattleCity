@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using Common;
+using Generators.MapGenerators;
+using Generators.SpawnPointsGenerators;
 using Interfaces;
-using MapGenerators;
 using UnityEngine;
 using Random = System.Random;
 using TileType = Common.TileType;
@@ -28,6 +30,12 @@ namespace Managers
         [Tooltip("Prefab used for map border tiles")]
         public GameObject borderPrefab;
 
+        [Tooltip("Prefab used for enemy spawn points")]
+        public GameObject enemySpawnPointPrefab;
+        
+        [Tooltip("Prefab used for player spawn points")]
+        public GameObject playerSpawnPointPrefab;
+
         [Header("Grid Settings (odd numbers recommended)")]
         [Min(1)]
         public int width = 25;
@@ -36,7 +44,15 @@ namespace Managers
         [Min(0.05f)]
         public float cellSize = 1f;
 
+        [Header("Spawn Points Setting")]
+        public int playerSpawnPointsCount = 1;
+        public int enemySpawnPointsCount = 5;
+        
+        public List<GameObject> EnemySpawnPoints { get; private set; }
+        public List<GameObject> PlayerSpawnPoints { get; private set; }
+
         private readonly IMapGenerator _mapGenerator = new MapGeneratorDFSMaze();
+        private readonly ISpawnPointsGenerator _spawnPointsGenerator = new SpawnPointsGeneratorAllVsOne();
         private bool _generatingMap = false;
 
         public event Action OnMapChanged;
@@ -57,9 +73,14 @@ namespace Managers
         
             Debug.Log($"Generated map: {width}x{height}");
 
+            List<SpawnPointInfo> spawnPointsInfo = _spawnPointsGenerator.GenerateSpawnPoints(Map, enemySpawnPointsCount, playerSpawnPointsCount);
+            EnemySpawnPoints = new();
+            PlayerSpawnPoints = new();
+            InstantiateSpawnPoints(spawnPointsInfo);
+
             _generatingMap = false;
         }
-    
+
         public void ReplaceTile(int x, int y, TileType type)
         {
             if (_generatingMap) // Tiles cannot be replaced during map generation (foolproof?)
@@ -74,7 +95,7 @@ namespace Managers
         
             Map[x, y] = type;
         
-            GameObject prefab = GetPrefab(type);
+            GameObject prefab = GetTilePrefab(type);
             TilesToObjectsMap[x, y] = PlaceAt(x, y, prefab);
         
             OnMapChanged?.Invoke();
@@ -86,13 +107,14 @@ namespace Managers
             {
                 for (int j = 0; j < height; j++)
                 {
-                    GameObject prefab = GetPrefab(Map[i, j]);
+                    GameObject prefab = GetTilePrefab(Map[i, j]);
                     TilesToObjectsMap[i, j] = PlaceAt(i, j, prefab);
+                    TilesToObjectsMap[i, j].AddComponent<TileInfo>().Initialize(new Vector2Int(i, j));
                 }
             }
         }
     
-        private GameObject GetPrefab(TileType type)
+        private GameObject GetTilePrefab(TileType type)
         {
             return type switch
             {
@@ -102,6 +124,41 @@ namespace Managers
                 TileType.Wall => wallPrefabs[_random.Next(0, wallPrefabs.Length)],
                 TileType.MapBorder => borderPrefab,
                 _ => throw new ArgumentException($"Prefab cannot be requested for this type of tile: {type}")
+            };
+        }
+        
+        private void InstantiateSpawnPoints(List<SpawnPointInfo> spawnPointsInfo)
+        {
+            foreach (var spawnPointInfo in spawnPointsInfo)
+            {
+                int x = spawnPointInfo.GridPosition.x;
+                int y = spawnPointInfo.GridPosition.y;
+                SpawnPointType type = spawnPointInfo.Type;
+                
+                GameObject prefab = GetSpawnPointPrefab(type);
+                GameObject spawnPoint = PlaceAt(x, y, prefab);
+
+                switch (type)
+                {
+                    case SpawnPointType.Enemy:
+                        EnemySpawnPoints.Add(spawnPoint);
+                        break;
+                    case SpawnPointType.Player:
+                        PlayerSpawnPoints.Add(spawnPoint);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        private GameObject GetSpawnPointPrefab(SpawnPointType type)
+        {
+            return type switch
+            {
+                SpawnPointType.Enemy => enemySpawnPointPrefab,
+                SpawnPointType.Player => playerSpawnPointPrefab,
+                _ => throw new ArgumentException($"Prefab cannot be requested for this type of spawn point: {type}")
             };
         }
 
@@ -118,7 +175,6 @@ namespace Managers
         
             obj.name = prefab.name + "_(" + x + "," + y + ")";
             obj.SetActive(true);
-            obj.AddComponent<TileInfo>().Initialize(new Vector2Int(x, y));
 
             return obj;
         }

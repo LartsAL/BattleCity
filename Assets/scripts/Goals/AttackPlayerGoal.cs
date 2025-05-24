@@ -44,7 +44,7 @@ namespace Goals
 
             Vector2 direction = player.transform.position - currentPosition;
             float distance = direction.magnitude;
-            _directionToPlayer = VectorUtils.RoundToCardinal(direction);
+            _directionToPlayer = CommonUtils.RoundToCardinalVector(direction);
             direction = _directionToPlayer * distance;
             Debug.DrawLine(currentPosition, currentPosition + (Vector3) direction, Color.yellow);
 

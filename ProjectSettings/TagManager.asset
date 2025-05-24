@@ -10,6 +10,7 @@ TagManager:
   - MapBorder
   - GameManager
   - Enemy
+  - SpawnPoint
   layers:
   - Default
   - TransparentFX

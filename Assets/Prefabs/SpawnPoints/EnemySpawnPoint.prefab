@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6922597588612707897, guid: 33c23f94708b44c44ac63b5c53ef122e, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6922597588612707897, guid: 33c23f94708b44c44ac63b5c53ef122e, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6922597588612707897, guid: 33c23f94708b44c44ac63b5c53ef122e, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6922597588612707897, guid: 33c23f94708b44c44ac63b5c53ef122e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -64,9 +64,17 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6922597588612707902, guid: 33c23f94708b44c44ac63b5c53ef122e, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: d0c208703e646104784b6ffc1d042c13, type: 3}
     - target: {fileID: 6922597588612707903, guid: 33c23f94708b44c44ac63b5c53ef122e, type: 3}
       propertyPath: m_Name
-      value: base_floor_red Variant
+      value: EnemySpawnPoint
+      objectReference: {fileID: 0}
+    - target: {fileID: 6922597588612707903, guid: 33c23f94708b44c44ac63b5c53ef122e, type: 3}
+      propertyPath: m_TagString
+      value: SpawnPoint
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

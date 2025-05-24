@@ -2,9 +2,9 @@
 
 namespace Utils
 {
-    public static class VectorUtils
+    public static class CommonUtils
     {
-        public static Vector2 RoundToCardinal(Vector2 vector)
+        public static Vector2 RoundToCardinalVector(Vector2 vector)
         {
             vector = vector.normalized;
 
