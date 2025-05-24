@@ -78,7 +78,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 50
   m_Sprite: {fileID: 21300000, guid: 78962bb49adc39947a1479995e741412, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -175,7 +175,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c30fb24eda556a44d8dff26f197a8fd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
-  lifetime: 2
-  damage: 1
+  rb: {fileID: 0}
+  moveSpeed: 10
+  maxLifeTime: 2
+  bulletDamage: 1
+  maxHealth: 2
   explosionPrefab: {fileID: 1075123213333092435, guid: ffbb9fcce7eb3954c893cdffb35d8dd3, type: 3}

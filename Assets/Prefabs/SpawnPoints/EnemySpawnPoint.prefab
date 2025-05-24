@@ -22,11 +22,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6922597588612707897, guid: 33c23f94708b44c44ac63b5c53ef122e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6922597588612707897, guid: 33c23f94708b44c44ac63b5c53ef122e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6922597588612707897, guid: 33c23f94708b44c44ac63b5c53ef122e, type: 3}
       propertyPath: m_LocalPosition.z
@@ -68,6 +68,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: d0c208703e646104784b6ffc1d042c13, type: 3}
+    - target: {fileID: 6922597588612707902, guid: 33c23f94708b44c44ac63b5c53ef122e, type: 3}
+      propertyPath: m_SortingOrder
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 6922597588612707903, guid: 33c23f94708b44c44ac63b5c53ef122e, type: 3}
       propertyPath: m_Name
       value: EnemySpawnPoint
