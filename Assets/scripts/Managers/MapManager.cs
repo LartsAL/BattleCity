@@ -46,10 +46,11 @@ namespace Managers
 
         [Header("Spawn Points Setting")]
         public int playerSpawnPointsCount = 1;
-        public int enemySpawnPointsCount = 5;
-        
-        public List<GameObject> EnemySpawnPoints { get; private set; }
-        public List<GameObject> PlayerSpawnPoints { get; private set; }
+        public int enemySpawnPointsCount = 8;
+        public float minSpawnPointDistance = 4.0f;
+
+        private List<GameObject> _enemySpawnPoints;
+        private List<GameObject> _playerSpawnPoints;
 
         private readonly IMapGenerator _mapGenerator = new MapGeneratorDFSMaze();
         private readonly ISpawnPointsGenerator _spawnPointsGenerator = new SpawnPointsGeneratorAllVsOne();
@@ -73,11 +74,13 @@ namespace Managers
         
             Debug.Log($"Generated map: {width}x{height}");
 
-            List<SpawnPointInfo> spawnPointsInfo = _spawnPointsGenerator.GenerateSpawnPoints(Map, enemySpawnPointsCount, playerSpawnPointsCount);
-            EnemySpawnPoints = new();
-            PlayerSpawnPoints = new();
+            List<SpawnPointInfo> spawnPointsInfo = _spawnPointsGenerator.GenerateSpawnPoints(Map, enemySpawnPointsCount, playerSpawnPointsCount, minSpawnPointDistance);
+            _enemySpawnPoints = new();
+            _playerSpawnPoints = new();
             InstantiateSpawnPoints(spawnPointsInfo);
-
+            
+            GameObject.FindWithTag("SpawnPointsManager").GetComponent<SpawnPointsManager>().Initialize(_enemySpawnPoints, _playerSpawnPoints);
+            
             _generatingMap = false;
         }
 
@@ -141,10 +144,10 @@ namespace Managers
                 switch (type)
                 {
                     case SpawnPointType.Enemy:
-                        EnemySpawnPoints.Add(spawnPoint);
+                        _enemySpawnPoints.Add(spawnPoint);
                         break;
                     case SpawnPointType.Player:
-                        PlayerSpawnPoints.Add(spawnPoint);
+                        _playerSpawnPoints.Add(spawnPoint);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

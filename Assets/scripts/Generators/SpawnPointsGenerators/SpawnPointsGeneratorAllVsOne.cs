@@ -10,7 +10,7 @@ namespace Generators.SpawnPointsGenerators
 {
     public class SpawnPointsGeneratorAllVsOne : ISpawnPointsGenerator
     {
-        public List<SpawnPointInfo> GenerateSpawnPoints(in TileType[,] map, int enemySpawnPointCount, int playerSpawnPointCount)
+        public List<SpawnPointInfo> GenerateSpawnPoints(in TileType[,] map, int enemySpawnPointCount, int playerSpawnPointCount, float minDistance)
         {
             if (playerSpawnPointCount < 1)
             {
@@ -22,7 +22,7 @@ namespace Generators.SpawnPointsGenerators
             
             List<SpawnPointInfo> spawnPoints = new ();
             
-            PlaceCenterSpawnPoint(ref spawnPoints, map, width, height, SpawnPointType.Player);
+            PlaceCenterSpawnPoint(ref spawnPoints, map, width, height, SpawnPointType.Player, minDistance);
 
             playerSpawnPointCount--;
 
@@ -32,21 +32,21 @@ namespace Generators.SpawnPointsGenerators
             for (int i = 0; i < playerSpawnPointCount && freePerimeterPositions.Count > 0; i++)
             {
                 Vector2Int pos = freePerimeterPositions[0];
-                TryAddSpawnPoint(ref spawnPoints, map, pos.x, pos.y, SpawnPointType.Player);
+                TryAddSpawnPoint(ref spawnPoints, map, pos.x, pos.y, SpawnPointType.Player, minDistance);
                 freePerimeterPositions.RemoveAt(0);
             }
             
             for (int i = 0; i < enemySpawnPointCount && freePerimeterPositions.Count > 0; i++)
             {
                 Vector2Int pos = freePerimeterPositions[0];
-                TryAddSpawnPoint(ref spawnPoints, map, pos.x, pos.y, SpawnPointType.Enemy);
+                TryAddSpawnPoint(ref spawnPoints, map, pos.x, pos.y, SpawnPointType.Enemy, minDistance);
                 freePerimeterPositions.RemoveAt(0);
             }
             
             return spawnPoints;
         }
 
-        private void PlaceCenterSpawnPoint(ref List<SpawnPointInfo> spawnPoints, in TileType[,] map, int width, int height, SpawnPointType type)
+        private void PlaceCenterSpawnPoint(ref List<SpawnPointInfo> spawnPoints, in TileType[,] map, int width, int height, SpawnPointType type, float minDistance)
         {
             Vector2Int center = new Vector2Int(width / 2 + width % 2, height / 2 + height % 2);
 
@@ -54,14 +54,14 @@ namespace Generators.SpawnPointsGenerators
             {
                 for (int x = center.x - radius; x <= center.x + radius; x++)
                 {
-                    if (TryAddSpawnPoint(ref spawnPoints, map, x, center.y - radius, type)) return;
-                    if (TryAddSpawnPoint(ref spawnPoints, map, x, center.y + radius, type)) return;
+                    if (TryAddSpawnPoint(ref spawnPoints, map, x, center.y - radius, type, minDistance)) return;
+                    if (TryAddSpawnPoint(ref spawnPoints, map, x, center.y + radius, type, minDistance)) return;
                 }
 
                 for (int y = center.y - radius; y <= center.y + radius; y++)
                 {
-                    if (TryAddSpawnPoint(ref spawnPoints, map, center.x - radius, y, type)) return;
-                    if (TryAddSpawnPoint(ref spawnPoints, map, center.x + radius, y, type)) return;
+                    if (TryAddSpawnPoint(ref spawnPoints, map, center.x - radius, y, type, minDistance)) return;
+                    if (TryAddSpawnPoint(ref spawnPoints, map, center.x + radius, y, type, minDistance)) return;
                 }
             }
         }
@@ -87,15 +87,23 @@ namespace Generators.SpawnPointsGenerators
                 .ToList();
         }
         
-        private bool TryAddSpawnPoint(ref List<SpawnPointInfo> spawnPoints, in TileType[,] map, int x, int y, SpawnPointType type)
+        private bool TryAddSpawnPoint(ref List<SpawnPointInfo> spawnPoints, in TileType[,] map, int x, int y, SpawnPointType type, float minDistance)
         {
-            if (map[x, y] == TileType.Floor)
+            if (map[x, y] != TileType.Floor)
             {
-                spawnPoints.Add(new SpawnPointInfo(new Vector2Int(x, y), type));
-                return true;
+                return false;
             }
 
-            return false;
+            foreach (var spawnPoint in spawnPoints)
+            {
+                if (Vector2Int.Distance(spawnPoint.GridPosition, new Vector2Int(x, y)) < minDistance)
+                {
+                    return false;
+                }
+            }
+            
+            spawnPoints.Add(new SpawnPointInfo(new Vector2Int(x, y), type));
+            return true;
         }
     }
 }

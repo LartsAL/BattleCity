@@ -1,4 +1,5 @@
-﻿using Brains;
+﻿using System;
+using Brains;
 using Interfaces;
 using UnityEngine;
 using Utils;
@@ -32,6 +33,8 @@ namespace Managers
         private float _currentHealth;
 
         public GameObject destroyEffect;
+
+        public event Action OnEnemyDeath;
     
         private void Start()
         {
@@ -127,6 +130,8 @@ namespace Managers
             {
                 Instantiate(destroyEffect, transform.position, Quaternion.identity);
             }
+            
+            OnEnemyDeath?.Invoke();
         }
     }
 }

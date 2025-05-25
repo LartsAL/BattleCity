@@ -11,6 +11,9 @@ TagManager:
   - GameManager
   - Enemy
   - SpawnPoint
+  - SpawnPointsManager
+  - RechargingIndicator
+  - HPIndicator
   layers:
   - Default
   - TransparentFX

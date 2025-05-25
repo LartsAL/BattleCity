@@ -1,3 +1,5 @@
+using Controllers;
+using Controllers.UI;
 using Interfaces;
 using UnityEngine;
 
@@ -34,10 +36,17 @@ namespace Managers
 
         public GameObject destroyEffect;
 
+        [SerializeField] private SpawnPointsManager spawnPointsManager;
+
         private void Start()
         {
             rb = GetComponent<Rigidbody2D>();
+            spawnPointsManager = GameObject.FindWithTag("SpawnPointsManager").GetComponent<SpawnPointsManager>();
             _currentHealth = maxHealth;
+            
+            GameObject.FindWithTag("MainCamera").GetComponent<CameraController>().target = transform;
+            GameObject.FindWithTag("RechargingIndicator").GetComponent<ShootCooldownIndicatorController>().playerController = this;
+            GameObject.FindWithTag("HPIndicator").GetComponent<HPIndicatorController>().playerController = this;
         }
 
         private void Update()
@@ -126,9 +135,20 @@ namespace Managers
         public void TakeDamage(float damage)
         {
             _currentHealth -= damage;
+            
+            if (destroyEffect != null)
+            {
+                Instantiate(destroyEffect, transform.position, Quaternion.identity);
+            }
+            
             if (_currentHealth <= 0)
             {
                 Destroy(gameObject);
+            }
+            else
+            {
+                gameObject.SetActive(false);
+                spawnPointsManager.RespawnPlayer(gameObject);
             }
         }
 
@@ -138,13 +158,8 @@ namespace Managers
             {
                 return;
             }
-        
-            if (destroyEffect != null)
-            {
-                Instantiate(destroyEffect, transform.position, Quaternion.identity);
-            }
 
-            var gameManager = GameObject.FindWithTag("GameManager").GetComponent<SoloGameManager>();
+            SoloGameManager gameManager = GameObject.FindWithTag("GameManager").GetComponent<SoloGameManager>();
             gameManager.ToGameOverScene();
         }
     }
