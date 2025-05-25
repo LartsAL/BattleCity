@@ -6,8 +6,8 @@ namespace Managers
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlayerTankController : MonoBehaviour, IDamageable, IMovable, IRotatable, IShooter
     {
-        public float moveSpeed = 3f;
-        public float rotateSpeed = 180f;   
+        public float moveSpeed = 2.0f;
+        public float rotateSpeed = 180.0f;   
 
         [SerializeField] private Rigidbody2D rb;
     
@@ -20,14 +20,19 @@ namespace Managers
 
         public GameObject bulletPrefab;
         public Transform firePoint;
-        public float shootCooldown = 0.5f;
+        [SerializeField] private float shootCooldown = 0.5f;
         private float _currentShootCooldown = 0.0f;
 
-        public float maxHealth = 4.0f;
+        public float ShootCooldown => _currentShootCooldown;
+        public float MaxShootCooldown => shootCooldown;
+
+        [SerializeField] private float maxHealth = 4.0f;
         private float _currentHealth;
 
+        public float Health => _currentHealth;
+        public float MaxHealth => maxHealth;
+
         public GameObject destroyEffect;
-        public float delayAfterDeath = 3.0f;
 
         private void Start()
         {
