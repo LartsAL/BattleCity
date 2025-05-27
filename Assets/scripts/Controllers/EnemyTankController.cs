@@ -10,6 +10,7 @@ namespace Managers
     public class EnemyTankController : MonoBehaviour, IDamageable, IMovable, IRotatable, IShooter
     {
         private static LayerMask _tanksLayer;
+        private static LayerMask _wallsLayer;
     
         private IBrain _brain;
     
@@ -39,6 +40,7 @@ namespace Managers
         private void Start()
         {
             _tanksLayer = LayerMask.GetMask("Tanks");
+            _wallsLayer = LayerMask.GetMask("Walls");
             rb = GetComponent<Rigidbody2D>();
             _brain = new SimplePatrolBrain(gameObject);
             _currentAttackCooldown = attackCooldown;
@@ -68,10 +70,15 @@ namespace Managers
 
             foreach (var raycastPoint in raycastPoints)
             {
-                RaycastHit2D hit = Physics2D.Raycast(raycastPoint.position, _facingDirection, minGap, _tanksLayer);
-                if (hit && hit.collider.CompareTag("Enemy"))
+                RaycastHit2D enemyHit = Physics2D.Raycast(raycastPoint.position, _facingDirection, minGap, _tanksLayer);
+                if (enemyHit && enemyHit.collider.CompareTag("Enemy"))
                 {
-                    return;
+                    // Prevents "wall hack" vision
+                    RaycastHit2D wallHit = Physics2D.Raycast(raycastPoint.position, _facingDirection, enemyHit.distance, _wallsLayer);
+                    if (!wallHit)
+                    {
+                        return;
+                    }
                 }
             }
             
